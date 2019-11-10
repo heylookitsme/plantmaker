@@ -8,24 +8,25 @@
 	</head>
 	<body>
 
-	<div style="color:white;top:30px;left:30px;position:absolute;font-size:30px"> <u style="font-size:50px">hi! this is my Technica 2019 project. press WASD to move around </u><br>
+	<div style="color:white;top:30px;left:30px;position:absolute;font-size:25px"> <u style="font-size:35px">hi! this is my Technica 2019 project. press WASDQR to move around </u><br>
  family:<select onChange="changeFam(this, event)">
   <option value="brassicaceae">brassicaceae (mustard)</option>
   <option value="oxalidaceae">oxalidaceae (uh)</option>
   <option value="malvaceae">malvaceae (think cattails?)</option>
-  <option value="cactaceae">hydrophyllaceae (waterleaf)</option>
-  <option value="zygophyllaceae">zygophyllaceae (caltrop)</option>
+  <option value="hydrophyllaceae">hydrophyllaceae (waterleaf)</option>
+  <option value="cactaceae">cactaceae (cacti)</option>
+  <option value="testflowerceae">testflowerceae (not a real flower)</option>
 </select>
 <br>
 # of subnodes:<input onChange="changeNodeNum(this.value)" type="number" />
 <br>
 depth: <input onChange="changeDepth(this.value)" type="number" />
 <br><br>
-<i style="font-size:14px">yeah, highkey its not finished, thanks for coming to my ted talk</i>
+<i style="font-size:14px">oh yeah and if you're brave, also use KEYS "i" "o" and "p" to rotate. its nonintuitive lol <br>yeah, highkey its not finished, thanks for coming to my ted talk<br> are all plants vines? yeah. they are. get rekt </i>
 </div>
 		<script src="js/three.js"></script>
 		<script>
-//disclaimer: javascript is usually ugly, so it doesnt matter if i write terrible javascript 😂
+
 
 //add a new scene 
 var scene = new THREE.Scene();
@@ -40,13 +41,14 @@ camera.position.x = 50;
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
-//new icosahedron :O
+/*//new icosahedron :O
 var geometry = new THREE.IcosahedronGeometry(20, 0);
 var material = new THREE.MeshNormalMaterial();
 var icosahedron = new THREE.Mesh( geometry, material );
 scene.add( icosahedron );
 icosahedron.position.x = 60;
 icosahedron.position.y=0;
+*/
 
 //new light 
 var light = new THREE.DirectionalLight(0xFFFFFF, 4);
@@ -57,14 +59,26 @@ d=-1;
 var animate = function () {
 requestAnimationFrame( animate );
 renderer.render( scene, camera );
-icosahedron.rotation.y +=.03;
+//icosahedron.rotation.y +=.03;
 };
 
 //instantiate the. lines and geometry to. draw the plant. 
+var families = {
+  "brassicaceae": {swidth:"2",slength:"5",div:"4",stddepth:"4",lwidth:"2",lheight:"4",lwrinkle:"0",numpetals:"4",numstamen:"4"},
+  "oxalidaceae": {swidth:"5",slength:"2",div:"5",stddepth:"7",lwidth:"4",lheight:"2",lwrinkle:"3",numpetals:"5",numstamen:"10"},
+  "malvaceae": {swidth:"2",slength:"5",div:"3",stddepth:"4",lwidth:"4",lheight:"3",lwrinkle:"4",numpetals:"5",numstamen:"1"},
+  "cactaceae": {swidth:"3",slength:"5",div:"3",stddepth:"4",lwidth:"0",lheight:"0",lwrinkle:"0",numpetals:"15",numstamen:"15"},
+"hydrophyllaceae": {swidth:"3",slength:"5",div:"5",stddepth:"4",lwidth:"4",lheight:"4",lwrinkle:"3",numpetals:"5",numstamen:"5"},
+"testflowerceae": {swidth:"3",slength:"3",div:"5",stddepth:"4",lwidth:"4",lheight:"4",lwrinkle:"3",numpetals:"5",numstamen:"5"}
+};
+
 var mathe = new THREE.LineBasicMaterial({color: 0x00FF00});
 var geome = new THREE.Geometry();
+var type = "testflowerceae";
+var depth = 7;
+var divisions = "10";
 //draw plant
-makePlant("type",9,9,8);
+makePlant(type,9,9,depth,divisions);
 
 
 //generate and draw leaf
@@ -80,15 +94,24 @@ scene.add( plane );
 
 //generate and draw stems 
 function stem(x,y,z,length,div, depth){
+length = families[type].slength*4;
 if (depth > 0){
+	var arr = [];
+for (var i=0, t=3; i<t; i++) {
+    arr.push(Math.round(Math.random() * 10))
+}
+
 for(i=0; i<div;i++){
-b = Math.cos(i)*20;
+//disclaimer: i never memorized my unit circle 	
+b = Math.cos(i*(Math.PI*2/div))*15;
+c = Math.sin(i*(Math.PI*2/div))*15;
 geome.vertices.push(new THREE.Vector3( x, y, z));
-geome.vertices.push(new THREE.Vector3( b+x+length, b+y+length, (b/2)+z+length));
-leaf(b+x+length,b+y+length,(b/2)+z+length,2,2,2,"yeah");
+geome.vertices.push(new THREE.Vector3( x+length+b, y+length+c, z+8));
+leaf(x+length+b,y+length+c,z+8,2,2,2,"yeah");
 geome.vertices.push(new THREE.Vector3( x, y, z));
 }
-stem(x+length,y+(length/2),z+(length/2),length,div, depth-1);
+stem(x+length,y+arr[1],z+arr[2],length,div, depth-1);
+flower(x,y,z,3,3);
 }
 if (depth ==0){
 console.log("end")
@@ -96,39 +119,37 @@ console.log("end")
 }
 
 //generate and draw flower
-function flower(type){
-
-//sepals
-//petals
-//stamens
+function flower(x,y,z,numPetals,numStamen){
+var geometry = new THREE.CircleGeometry(2,32);
+var material = new THREE.MeshBasicMaterial( {color: 0x5500ff} );
+var flower = new THREE.Mesh( geometry, material );
+flower.position.x = x;
+flower.position.y = y;
+flower.position.z = z;
+scene.add( flower );
+//sepals << what the ever loving fuck is this
 
 }
 
-//makes the plant. 
-//yeah it goes stem{leaf} and uh. actually i dont know why i seperated them but im pretty sure 
-//it'll become apparent when. it does 😂
-function makePlant(type,width,height,depth){
+var line = new THREE.Line( geome, mathe );
+function makePlant(type,width,height,depth,div){
 	this.type = type; 
 	this.width = width;
 	this.height = height; 
-	stem(-40,-40,0,height,5,depth);
-	var line = new THREE.Line( geome, mathe );
+	stem(-10,-40,0,height,div,depth);
+	console.log(geome);
+	line = new THREE.Line( geome, mathe );
 	scene.add(line);
 	
 }
 
-//types of plants and their properties. 
-//like maybe a json data later, but an enum is fine for now 
-var SizeEnum = {
-  brassicaceae: 1,
-  oxalidaceae: 2,
-  malvaceae: 3,
-};
 
 //movement Event
 document.addEventListener("keydown", onDocumentKeyDown, false);
 ySpeed=1;
 xSpeed=1;
+rotSpeed=.3;
+//you ever se something that makes sense, and steal it?
 function onDocumentKeyDown(event) {
     var keyCode = event.which;
     if (keyCode == 87) {
@@ -139,45 +160,51 @@ function onDocumentKeyDown(event) {
         camera.position.x -= xSpeed;
     } else if (keyCode == 68) {
         camera.position.x += xSpeed;
+    }  else if (keyCode == 81) {
+        camera.position.z += xSpeed;
+    } else if (keyCode == 69) {
+        camera.position.z -= xSpeed;
     } else if (keyCode == 32) {
         camera.position.set(0, 0, 0);
+    }else if (keyCode == 80) {
+        camera.rotation.x += rotSpeed;
+    }else if (keyCode == 79) {
+        camera.rotation.y += rotSpeed;
+    }else if (keyCode == 73) {
+        camera.rotation.z += rotSpeed;
     }
 };
 
-//so we haven't talked about how i literally do not use javascript
-//why didn't i make a java applet?
-//greeeaattttt question 
-//i literally fucking rename "this" and its like "okay we work now" 
-//and im jsut here, sobbing into my hands 
-//because i dont understand javascrip
-//im like. the peak of the dunning kruger effect
-//help 
+function clearScene(){
+while(scene.children.length > 0){ 
+    scene.remove(scene.children[0]); 
+}
+scene.remove(line);
+geome = new THREE.Geometry();
+}
+
 function changeFam(a, event) {
-    console.log(a.options[a.selectedIndex].value);
-//SHOULD I MAKE A NEW ONE EVERYTIME AND CLEAR THE SCREEN INSTEAD OF AAKJEHKJEHKKJSHDKJFHJKDFHKJH 
-//updating figures is difficult i dont like it it makes me all kinds of sad	
-makePlant(a.options[a.selectedIndex].value,40,40,4);
+console.log(a.options[a.selectedIndex].value);
+clearScene();
+type = a.options[a.selectedIndex].value;
+makePlant(type,9,9,depth,divisions);
 }
 
 function changeNodeNum(newNum) {
-	//oKAY SO I KINDA WROTE THIS ALL WRONG SO. WE DONT TLK ABOUT HER. RN. AND. I DONT THINK WE'RE GOING TO TALK ABOUT HER
-	//JUST PRETEND SHE DOESNT EXIST HAHAHAHHAHAHAHAH
-	//CAN WE TALK ABT HOW THE GEOMETHERY DOESNT GET RESET EVERY TIME LIKE IM CRYING THIS IS SO BAAAAAAAAAAAAAAAAAAD
     console.log("new node num: ",newNum);
-makePlant("haha",6,6,7);
+divisions = newNum;
+clearScene();
+makePlant(type,9,9,depth,divisions);
+
 }
 function changeDepth(newNum) {
     console.log("new depth: ",newNum);
-makePlant("haha".value,8,8,newNum);
+depth = newNum;
+clearScene();
+makePlant(type,9,9,depth,divisions);
+
 }
 
-//should i have seperated my drawing functions and my math 
-//yeah lol 
-//see you only know when something is Very Very Wrong when like. 
-//you think about it 
-//and youre like 
-//"ah. oh no"
-//there h a s to be a way to make just a whole field out of some data i swear to g
 animate();
 		</script>
 	</body>
