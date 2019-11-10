@@ -22,7 +22,7 @@
 <br>
 depth: <input onChange="changeDepth(this.value)" type="number" />
 <br><br>
-<i style="font-size:14px">yeah, highkey its not finished, thanks for coming to my ted talk</i>
+<i style="font-size:14px">yeah, highkey its not finished, thanks for coming to my ted talk<br> are all plants vines? yeah. they are. get rekt </i>
 </div>
 		<script src="js/three.js"></script>
 		<script>
@@ -65,8 +65,11 @@ renderer.render( scene, camera );
 //instantiate the. lines and geometry to. draw the plant. 
 var mathe = new THREE.LineBasicMaterial({color: 0x00FF00});
 var geome = new THREE.Geometry();
+var type = "testflowerceae";
+var depth = 7;
+var divisions = "10";
 //draw plant
-makePlant("type",9,9,8);
+makePlant(type,9,9,depth,divisions);
 
 
 //generate and draw leaf
@@ -83,9 +86,6 @@ scene.add( plane );
 //generate and draw stems 
 function stem(x,y,z,length,div, depth){
 if (depth > 0){
-//theres a joke about. pre determining a hash table for speed or whatver but 
-//balAH BLAh bLAH loG N 
-//we're ignoring her for now 
 	var arr = [];
 for (var i=0, t=3; i<t; i++) {
     arr.push(Math.round(Math.random() * 10))
@@ -128,39 +128,23 @@ scene.add( flower );
 }
 
 var line = new THREE.Line( geome, mathe );
-//makes the plant. 
-//yeah it goes stem{leaf} and uh. actually i dont know why i seperated them but im pretty sure 
-//it'll become apparent when. it does 😂
-function makePlant(type,width,height,depth){
-//after you pass in the type. then all the data should pass in. 
-//oohhh god .-.
+function makePlant(type,width,height,depth,div){
 	this.type = type; 
 	this.width = width;
 	this.height = height; 
-	stem(-10,-40,0,height,9,depth);
+	stem(-10,-40,0,height,div,depth);
 	console.log(geome);
 	line = new THREE.Line( geome, mathe );
 	scene.add(line);
 	
 }
 
-//types of plants and their properties. 
-//like maybe a json data later, but an enum is fine for now 
-//this is M E G A cursed
-//this is so disgusting why didnt i just make a json and import it (pepehands emoji) 
-var planttypes = {
+var families = {
   brassicaceae: 1,
   oxalidaceae: 2,
   malvaceae: 3,
   cactaceae: 4,
 hydrophyllaceae: 5,
-//SEE, YOU NEED A DEGREE OF MUTATION TOO I GUESS OR LIKE A RANGE BUT. BUT LIKE WERE IGNORING THAT 
-	//One (1) Stamen**********
-//the desire to just train ml on this is too great 
-//but i dont know ML (crying emoji) 
-//retrograde regret for my limited googling skills and xxnz
-	//what the fUCK is a cactus' spike called 
-		//SERIOUSly 
 properties:{
     1:{swidth:"2",slength:"5",div:"4",stddepth:"4",lwidth:"2",lheight:"4",lwrinkle:"0",numpetals:"4",numstamen:"4"},
     2: {swidth:"5",slength:"2",div:"5",stddepth:"7",lwidth:"4",lheight:"2",lwrinkle:"3",numpetals:"5",numstamen:"10"},
@@ -176,6 +160,7 @@ document.addEventListener("keydown", onDocumentKeyDown, false);
 ySpeed=1;
 xSpeed=1;
 rotSpeed=.3;
+	//OhhhHHHHH FUCK I DIDNT REALISE IT WAS ON ONE PLANE OH IM SO FUCKED 
 //you ever se something that makes sense, and steal it?
 function onDocumentKeyDown(event) {
     var keyCode = event.which;
@@ -187,6 +172,10 @@ function onDocumentKeyDown(event) {
         camera.position.x -= xSpeed;
     } else if (keyCode == 68) {
         camera.position.x += xSpeed;
+    }  else if (keyCode == 81) {
+        camera.position.z += xSpeed;
+    } else if (keyCode == 69) {
+        camera.position.z -= xSpeed;
     } else if (keyCode == 32) {
         camera.position.set(0, 0, 0);
     }else if (keyCode == 80) {
@@ -205,50 +194,30 @@ while(scene.children.length > 0){
 scene.remove(line);
 geome = new THREE.Geometry();
 }
-//so we haven't talked about how i literally do not use javascript
-//why didn't i make a java applet?
-//greeeaattttt question 
-//i literally fucking rename "this" and its like "okay we work now" 
-//and im jsut here, sobbing into my hands 
-//because i dont understand javascrip
-//im like. the peak of the dunning kruger effect
-//help 
 
 function changeFam(a, event) {
-    console.log(a.options[a.selectedIndex].value);
-//SHOULD I MAKE A NEW ONE EVERYTIME AND CLEAR THE SCREEN INSTEAD OF AAKJEHKJEHKKJSHDKJFHJKDFHKJH 
-//updating figures is difficult i dont like it it makes me all kinds of sad
+console.log(a.options[a.selectedIndex].value);
 clearScene();
-makePlant(a.options[a.selectedIndex].value,40,40,4);
+type = a.options[a.selectedIndex].value;
+makePlant(type,9,9,depth,divisions);
 }
 
 function changeNodeNum(newNum) {
-	//oKAY SO I KINDA WROTE THIS ALL WRONG SO. WE DONT TLK ABOUT HER. RN. AND. I DONT THINK WE'RE GOING TO TALK ABOUT HER
-	//JUST PRETEND SHE DOESNT EXIST HAHAHAHHAHAHAHAH
-	//CAN WE TALK ABT HOW THE GEOMETHERY DOESNT GET RESET EVERY TIME LIKE IM CRYING THIS IS SO BAAAAAAAAAAAAAAAAAAD
     console.log("new node num: ",newNum);
-while(scene.children.length > 0){ 
-    scene.remove(scene.children[0]); 
-}
-var geome = new THREE.Geometry();
-makePlant("haha",6,6,7);
+divisions = newNum;
+clearScene();
+makePlant(type,9,9,depth,divisions);
+
 }
 function changeDepth(newNum) {
     console.log("new depth: ",newNum);
-while(scene.children.length > 0){ 
-    scene.remove(scene.children[0]); 
-}
-var geome = new THREE.Geometry();
-makePlant("haha".value,8,8,newNum);
+depth = newNum;
+clearScene();
+makePlant(type,9,9,depth,divisions);
+
+
 }
 
-//should i have seperated my drawing functions and my math 
-//yeah lol 
-//see you only know when something is Very Very Wrong when like. 
-//you think about it 
-//and youre like 
-//"ah. oh no"
-//there h a s to be a way to make just a whole field out of some data i swear to g
 animate();
 		</script>
 	</body>
